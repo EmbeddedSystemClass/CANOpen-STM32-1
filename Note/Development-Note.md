@@ -55,7 +55,7 @@ transport select hla_swd
 
 ```
 2. C/C++ Auto-completion
-VSCode will automatically promote juse c_cpp_prooperties.json to config project. Add include path to the json files.
+VSCode will automatically promote add c_cpp_prooperties.json to config project. Add include path to the json files.
 ``` json
 {
     "configurations": [
