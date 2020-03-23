@@ -80,6 +80,17 @@ VSCode will automatically promote add c_cpp_prooperties.json to config project. 
     "version": 4
 }
 ```
+3. compile_commands.json generation
+
+For linux system, it's quite simple, use bear.
+
+For windows/macOS, compiledb from python is another choice.
+``` shell
+$ bear make
+or
+$ compiledb -nf make
+
+```
 ---
 # STM32F446 Nucleo Perpherial Config
 ## UART
