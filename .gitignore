@@ -1,5 +1,4 @@
+compile_commands.json
 build/
 .vscode/.cortex-debug.peripherals.state.json
 .vscode/.cortex-debug.registers.state.json
-compile_commands.json
-compile_commands.json
