@@ -102,8 +102,34 @@ compiledb forwards all the options/arguments passed after make subcommand to GNU
 2. Interrupt handler
 3. DMA Transfer
 ## DMA
+For the uart, there are two interrupts happened, half transmit and transmit completed.
+https://stackoverflow.com/questions/43298708/stm32-implementing-uart-in-dma-mode
+From up link, has a clear explaination about how it works.
 
 ## Timer
+The Basic Timers (BT) TIM6, TIM7, TIM14, etc (1°) are the most simple timers available in the STM32 portfolio.
+
+The BT are 16 bit timer.
+
+The BT are UP timer only.
+
+The BT my be used in DMA and/or under Interrupt.
+
+The BT has the capabilities show below.
+
+Plese refer to the AN4013 for more info on the STM32 Timers.
+![20200324140124.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200324140124.png)
+![20200324140209.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200324140209.png)
+
+For this application, use basic timer modes.
+
+Hardware timers keep counting up or down depending on the module until the timer period is reached. Then the timer is reset:
+![update events.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200324134420.png)
+
+We will use the timer to keep our LED on 80% of the time by setting a period of 500, turning it on when the counter reaches 400 and turning it off when it reaches 500:
+![20200324134510.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200324134510.png)
+
+http://www.emcu.eu/stm32-basic-timer/ make a good explanation about the timer.
 
 ## CAN
 
