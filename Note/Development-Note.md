@@ -88,7 +88,11 @@ For windows/macOS, compiledb from python is another choice.
 ``` shell
 $ bear make
 or
-$ compiledb -nf make
+$ compiledb make -j8
+
+By default, compiledb make generates the compilation database and runs the actual build command requested (acting as a make wrapper), the build step can be skipped using the -n or --no-build options.
+
+compiledb forwards all the options/arguments passed after make subcommand to GNU Make, so one can, for example, generate compile_commands.json using core/main.mk as main makefile (-f flag), starting the build from build directory (-C flag):
 
 ```
 ---
