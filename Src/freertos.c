@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
 #include "usart.h"
+#include "tim.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,11 +51,11 @@
 /* USER CODE END Variables */
 typedef StaticTask_t osStaticThreadDef_t;
 osThreadId_t defaultTaskHandle;
-uint32_t defaultTaskBuffer[ 512 ];
+uint32_t defaultTaskBuffer[ 128 ];
 osStaticThreadDef_t defaultTaskControlBlock;
-osThreadId_t uartDeamonTaskHandle;
-uint32_t uartDeamonTaskBuffer[ 512 ];
-osStaticThreadDef_t uartDeamonTaskControlBlock;
+osThreadId_t uartRxTaskHandle;
+uint32_t uartRxTaskBuffer[ 256 ];
+osStaticThreadDef_t uartRxTaskControlBlock;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -62,7 +63,7 @@ osStaticThreadDef_t uartDeamonTaskControlBlock;
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
-void StartUartDeamonTask(void *argument);
+void StartUartRxTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -101,20 +102,20 @@ osKernelInitialize();
     .stack_size = sizeof(defaultTaskBuffer),
     .cb_mem = &defaultTaskControlBlock,
     .cb_size = sizeof(defaultTaskControlBlock),
-    .priority = (osPriority_t) osPriorityNormal,
+    .priority = (osPriority_t) osPriorityLow,
   };
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* definition and creation of uartDeamonTask */
-  const osThreadAttr_t uartDeamonTask_attributes = {
-    .name = "uartDeamonTask",
-    .stack_mem = &uartDeamonTaskBuffer[0],
-    .stack_size = sizeof(uartDeamonTaskBuffer),
-    .cb_mem = &uartDeamonTaskControlBlock,
-    .cb_size = sizeof(uartDeamonTaskControlBlock),
+  /* definition and creation of uartRxTask */
+  const osThreadAttr_t uartRxTask_attributes = {
+    .name = "uartRxTask",
+    .stack_mem = &uartRxTaskBuffer[0],
+    .stack_size = sizeof(uartRxTaskBuffer),
+    .cb_mem = &uartRxTaskControlBlock,
+    .cb_size = sizeof(uartRxTaskControlBlock),
     .priority = (osPriority_t) osPriorityLow1,
   };
-  uartDeamonTaskHandle = osThreadNew(StartUartDeamonTask, NULL, &uartDeamonTask_attributes);
+  uartRxTaskHandle = osThreadNew(StartUartRxTask, NULL, &uartRxTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -134,34 +135,35 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
 
   /* Infinite loop */
-  uart2_tx_buf[0] = 'A';
-  uart2_tx_buf[1] = 'B';
-  uart2_tx_buf[2] = 'C';
-
+  int counter = 0;
+  HAL_TIM_Base_Start_IT(&htim7);
+  HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_1);
+  
   for (;;)
   {
-    HAL_UART_Transmit_DMA(&huart2, uart2_tx_buf, 3);
-    osDelay(1);
+    uart_printf("FreeRTOS:loop counter=%d.\n",counter);
+    counter++;
+    osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
 }
 
-/* USER CODE BEGIN Header_StartUartDeamonTask */
+/* USER CODE BEGIN Header_StartUartRxTask */
 /**
-* @brief Function implementing the uartDeamonTask thread.
+* @brief Function implementing the uartRxTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartUartDeamonTask */
-void StartUartDeamonTask(void *argument)
+/* USER CODE END Header_StartUartRxTask */
+void StartUartRxTask(void *argument)
 {
-  /* USER CODE BEGIN StartUartDeamonTask */
+  /* USER CODE BEGIN StartUartRxTask */
   /* Infinite loop */
-  for (;;)
+  for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartUartDeamonTask */
+  /* USER CODE END StartUartRxTask */
 }
 
 /* Private application code --------------------------------------------------*/

@@ -129,7 +129,30 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  UNUSED(huart);
+  /* unlock the uart resource spinlock */
+}
 
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+  UNUSED(huart);
+}
+
+uint32_t uart_printf(const char *format, ...)
+{
+  va_list ap;
+  int ret;
+  ret = 0;
+
+  va_start(ap, format);
+  ret = vsprintf((char *)uart2_tx_buf, format, ap);
+  va_end(ap);
+  HAL_UART_Transmit_DMA(&huart2, uart2_tx_buf, ret);
+
+  return ret;
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

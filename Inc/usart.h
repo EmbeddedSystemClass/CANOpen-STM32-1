@@ -27,7 +27,11 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <stdarg.h>
 
+#include "FreeRTOS.h"
+#include "semphr.h"
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart2;
@@ -38,12 +42,16 @@ extern UART_HandleTypeDef huart2;
 
 extern uint8_t uart2_tx_buf[TX_BUF_SIZE];
 extern uint8_t uart2_rx_buf[RX_BUF_SIZE];
+
 /* USER CODE END Private defines */
 
 void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart);
 
+uint32_t uart_printf(const char *format, ...);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
