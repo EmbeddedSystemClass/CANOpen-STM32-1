@@ -136,3 +136,4 @@ Basic knowledge at here
 https://www.notion.so/c2real/CAN-Basic-Knowledge-22b2ce481c124ec38f41f09ae16f0a74
 
 # CANOpen Protocol
+https://wenku.baidu.com/view/1bd617d081eb6294dd88d0d233d4b14e85243e96.html
