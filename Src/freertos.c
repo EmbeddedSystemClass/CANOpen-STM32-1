@@ -134,8 +134,13 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
 
   /* Infinite loop */
+  uart2_tx_buf[0] = 'A';
+  uart2_tx_buf[1] = 'B';
+  uart2_tx_buf[2] = 'C';
+
   for (;;)
   {
+    HAL_UART_Transmit_DMA(&huart2, uart2_tx_buf, 3);
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
