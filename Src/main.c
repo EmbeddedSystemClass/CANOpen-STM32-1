@@ -21,6 +21,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "can.h"
 #include "dma.h"
 #include "tim.h"
 #include "usart.h"
@@ -96,8 +97,9 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM7_Init();
   MX_TIM2_Init();
+  MX_CAN1_Init();
   /* USER CODE BEGIN 2 */
-  
+  USR_CAN1_Init();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

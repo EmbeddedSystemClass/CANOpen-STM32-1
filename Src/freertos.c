@@ -56,6 +56,12 @@ osStaticThreadDef_t defaultTaskControlBlock;
 osThreadId_t uartRxTaskHandle;
 uint32_t uartRxTaskBuffer[ 256 ];
 osStaticThreadDef_t uartRxTaskControlBlock;
+osThreadId_t canTxTaskHandle;
+uint32_t canTxTaskBuffer[ 256 ];
+osStaticThreadDef_t canTxTaskControlBlock;
+osThreadId_t canRxTaskHandle;
+uint32_t canRxTaskBuffer[ 256 ];
+osStaticThreadDef_t canRxTaskControlBlock;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -64,6 +70,8 @@ osStaticThreadDef_t uartRxTaskControlBlock;
 
 void StartDefaultTask(void *argument);
 void StartUartRxTask(void *argument);
+void StartCanTxTask(void *argument);
+void StartCanRxTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -117,6 +125,28 @@ osKernelInitialize();
   };
   uartRxTaskHandle = osThreadNew(StartUartRxTask, NULL, &uartRxTask_attributes);
 
+  /* definition and creation of canTxTask */
+  const osThreadAttr_t canTxTask_attributes = {
+    .name = "canTxTask",
+    .stack_mem = &canTxTaskBuffer[0],
+    .stack_size = sizeof(canTxTaskBuffer),
+    .cb_mem = &canTxTaskControlBlock,
+    .cb_size = sizeof(canTxTaskControlBlock),
+    .priority = (osPriority_t) osPriorityNormal,
+  };
+  canTxTaskHandle = osThreadNew(StartCanTxTask, NULL, &canTxTask_attributes);
+
+  /* definition and creation of canRxTask */
+  const osThreadAttr_t canRxTask_attributes = {
+    .name = "canRxTask",
+    .stack_mem = &canRxTaskBuffer[0],
+    .stack_size = sizeof(canRxTaskBuffer),
+    .cb_mem = &canRxTaskControlBlock,
+    .cb_size = sizeof(canRxTaskControlBlock),
+    .priority = (osPriority_t) osPriorityNormal,
+  };
+  canRxTaskHandle = osThreadNew(StartCanRxTask, NULL, &canRxTask_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -164,6 +194,42 @@ void StartUartRxTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartUartRxTask */
+}
+
+/* USER CODE BEGIN Header_StartCanTxTask */
+/**
+* @brief Function implementing the canTxTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartCanTxTask */
+void StartCanTxTask(void *argument)
+{
+  /* USER CODE BEGIN StartCanTxTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartCanTxTask */
+}
+
+/* USER CODE BEGIN Header_StartCanRxTask */
+/**
+* @brief Function implementing the canRxTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartCanRxTask */
+void StartCanRxTask(void *argument)
+{
+  /* USER CODE BEGIN StartCanRxTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartCanRxTask */
 }
 
 /* Private application code --------------------------------------------------*/
