@@ -132,5 +132,7 @@ We will use the timer to keep our LED on 80% of the time by setting a period of 
 http://www.emcu.eu/stm32-basic-timer/ make a good explanation about the timer.
 
 ## CAN
+Basic knowledge at here
+https://www.notion.so/c2real/CAN-Basic-Knowledge-22b2ce481c124ec38f41f09ae16f0a74
 
 # CANOpen Protocol
