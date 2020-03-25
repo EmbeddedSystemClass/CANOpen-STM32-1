@@ -135,6 +135,82 @@ http://www.emcu.eu/stm32-basic-timer/ make a good explanation about the timer.
 Basic knowledge at here
 https://www.notion.so/c2real/CAN-Basic-Knowledge-22b2ce481c124ec38f41f09ae16f0a74
 
+ISO11898标准，该标准的物理层特征如下图所示：
+![20200325100050.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325100050.png)
+从该特性可以看出，显性电平对应逻辑0，CAN_H和CAN_L之差为2.5V左右。而隐性电平对应逻辑1，CAN_H和CAN_L之差为0V。在总线上显性电平具有优先权，只要有一个单元输出显性电平，总线上即为显性电平。而隐形电平则具有包容的意味，只有所有的单元都输出隐性电平，总线上才为隐性电平（显性电平比隐性电平更强）。另外，在CAN总线的起止端都有一个120Ω的终端电阻，来做阻抗匹配，以减少回波反射。
+
+CAN协议是通过以下5种类型的帧进行的：
+* 数据帧
+* 摇控帧
+* 错误帧 
+* 过载帧
+* 帧间隔
+ 
+数据帧和遥控帧有标准格式和扩展格式两种格式。标准格式有11 个位的标识符（ID），扩展格式有29 个位的ID。
+
+数据帧一般由7个段构成，即：
+（1）       帧起始。表示数据帧开始的段。
+（2）       仲裁段。表示该帧优先级的段。
+（3）       控制段。表示数据的字节数及保留位的段。
+（4）       数据段。数据的内容，一帧可发送0~8个字节的数据。
+（5）       CRC段。检查帧的传输错误的段。
+（6）       ACK段。表示确认正常接收的段。
+（7）       帧结束。表示数据帧结束的段
+
+**Standard frame**
+![20200325142124.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325142124.png)
+SOF – Start of Frame bit. It indicates  start of message and used to synchronize the nodes on a bus. A dominant bit in the field marks the start of frame.
+
+IDENTIFIER – It serves dual purpose one, to determine which node has access to the bus and second to identify the type of message.
+
+RTR – Remote Transmission Request. It identifies whether it’s a data frame or a remote frame .RTR is **dominant** when it is a data frame and **recessive** when it is a remote frame.
+
+IDE – Identifier Extension. It is used to specify the frame format. Dominant bit is for standard frame and recessive for extended frame.
+
+R0 – Reversed bit.  Not used currently and kept for future use.
+
+EOF– End of Frame (EOF). The  7-bit field marks the end of a CAN frame (message) and disables Bit – stuffing, indicating a stuffing error when dominant.
+
+IFS – Inter Frame Space that specifies minimum number of bits separating consecutive messages. It provides the intermission between two frames and consists of three recessive bits known as intermission bits. This time allows nodes for internal processing before the start of next frame.
+![20200325144006.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325144006.png)
+
+
+**EXTENDED CAN**
+![20200325142508.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325142508.png)
+
+SRR- Substitute Reverse Request. The SRR bit is always transmitted as a **recessive** bit to ensure that, in the case of arbitration between a Standard Data Frame and an Extended Data Frame, the Standard Data Frame will always have priority if both messages have the same base (11 bit) identifier. 
+
+![20200325143945.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325143945.png)
+
+CAN2.0A only has standard frame.
+Both bits, r1 and r0, were reserved for future use and were kept at a low (dominant) level.
+![20200325145349.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325145349.png)
+
+CAN2.0B
+The Control Field was “re-designed” (CAN 2.0B) as shown in picture 4.6.2 in order to support co-existence of 11 and 29 bit identifiers on the same CAN bus.
+![20200325145430.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325145430.png)
+A low (dominant) IDE bit indicates an 11 bit message identifier, a high (recessive) IDE bit indicates a 29 bit identifier.
+
+A **low (dominant) IDE** bit indicates an 11 bit message identifier.
+![20200325145633.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325145633.png)
+
+A **high (recessive) IDE** bit indicates a 29 bit identifier.
+![20200325145701.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325145701.png)
+
+The 29 bit message identifier consists of the regular 11 bit base identifier and an 18 bit identifier extension. Between the SOF (Start of Frame) bit and the end of the 11 bit (base) message identifier, both frame formats, Standard and Extended, are identical.
+
+Following the 11 bit base identifier, the Extended Format uses an (always recessive) SRR (Substitute Remote Request) bit, which, as its name implies, replaces the regular RTR (Remote Transmission Request). The following IDE (Identifier Extension) bit is also kept at **a recessive level**.
+
+With the use of a recessive SRR plus a recessive IDE bit it is guaranteed that standard message frames (11 bit identifier) will always have higher priority than extended message frames (29 bit identifier) with identical 11 bit base identifier (see also Chapter 6 - Bus Arbitration).
+
+The Control Field of an extended message frame, following the 18 bit extended identifier plus RTR bit, has the format of the original CAN 2.0A standard.
+The CAN2.0B frame after arbitration field is still the same as CAN2.0A frame.
+Bits r1 and r0 are reserved for future use and are always kept at a dominant level.
+
+![20200325145910.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325145910.png)
+
+
+
 ## STM32中的CAN接口
 STM32的芯片中具有bxCAN控制器 (Basic Extended CAN)，它支持CAN协议2.0A和2.0B标准。该CAN控制器支持最高的通讯速率为1Mb/s；可以自动地接收和发送CAN报文，支持使用标准ID和扩展ID的报文；外设中具有3个发送邮箱，发送报文的优先级可以使用软件控制，还可以记录发送的时间；具有2个3级深度的接收FIFO，可使用过滤功能只接收或不接收某些ID号的报文；可
 配置成自动重发；不支持使用DMA进行数据收发。
@@ -189,6 +265,7 @@ messages can be stored in each FIFO. The FIFOs are managed completely by hardwar
 
 https://blog.csdn.net/qq_29413829/article/details/53230716
 https://blog.csdn.net/qq_36355662/article/details/80607453?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
+http://www.copperhilltechnologies.com/can-bus-guide-higher-layer-protocols/
 
     
 # CANOpen Protocol
