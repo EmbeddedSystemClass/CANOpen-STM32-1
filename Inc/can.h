@@ -27,7 +27,7 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "usart.h"
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;
@@ -41,6 +41,8 @@ void MX_CAN1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 void USR_CAN1_Init(void);
+
+uint8_t CANx_TxTest(CAN_HandleTypeDef *hcan);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -263,10 +263,74 @@ the others.
 Two receive FIFOs are used by hardware to store the incoming messages. Three complete
 messages can be stored in each FIFO. The FIFOs are managed completely by hardware.
 
-https://blog.csdn.net/qq_29413829/article/details/53230716
-https://blog.csdn.net/qq_36355662/article/details/80607453?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
-http://www.copperhilltechnologies.com/can-bus-guide-higher-layer-protocols/
+所谓“远程帧”是一个传统翻译上的误区。Remote Frame实际上它的意义是“遥控帧”，发起方发起特定ID的远程帧，并且只发送ID部分，那么与其ID相符的终端设备就有义务在后半段的数据部分接管总线控制权并发送自己的数据。
+打个比方，中控机需要定时获取某个节点的数据（例如转速计的实时转速、油量计的实时油量等），可以向总线发送远程帧；相应节点在接收判断帧ID与自己相符、并且是远程帧的情况下，就可以将自己的实时数据发送到总线上；这样中控机就获取到了相关节点的实时数据。
+远程帧最大的好处就是只需要一帧的时间就能完成一次双向交互。
+
 
     
 # CANOpen Protocol
+## CANOpen
+CANOpen Is suited for embedded applications
+Was originally designed for motion control
+Was developed and is maintained by the CAN-in-Automation User Group
+Like CAN, the CANopen standard is the responsibility of CiA (CAN-in-Automation). For further information, refer to http://www.can-cia.org.
+
+Even though extremely effective in automobiles and small applications, CAN alone is not suitable for machine automation, since its communication between devices is limited to only **8 bytes**.
+
+As a consequence, higher layer protocols such as CANopen for machine control, DeviceNet for factory automation and J1939 for vehicles were designed to provide a real networking technology that support messages of **unlimited length** and allow a master/slave configuration.
+
+OSI 7 Layers Model
+![20200325224803.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325224803.png)
+* They enable data transport of more than 8 bytes per message
+* Embedded Systems may require an appropriate communication model based on Master/Slave configuration
+* They provide Network Management (Network Start-Up, Node Monitoring, Node Synchronization, etc.)
+
+
+The standard CAN implementation bypasses the connection between the Data Link Layer and the Application Layer in order to save on valuable memory resources by minimizing the overhead and, as a result, gaining performance as needed for embedded solutions with limited resources.
+
+The Application Layer is the layer that actually interacts with the operating system or application of the CAN device.
+
+The Data Link Layer connects the actual data to the protocol in terms of sending, receiving and validating data. Under CAN it represents the data exchange including error detection/recovery and fault confinement, transmission acknowledgements, etc., and all the ingenious features as previously described in Chapter 2 - Main Characteristics.
+
+The Physical Layer represents the actual hardware, i.e. the physical connection between nodes in a network and the electrical signal characteristics such as voltage levels and timing.
+
+```
+Whenever you attempt to add software functions between the CAN Data Link Layer and the Application Layer, 
+you will be adding functionalities that are already covered by off-the-shelf available
+higher layer protocols such as CANopen and DeviceNet.
+```
+The software development engineer will benefit from the fact that under CAN the two lowest layers, **the Physical Layer and Data Link Layer, are already integrated into silicon**. This reduces the software development process by concentrating solely on the coding of the actual application software.
+
+![20200325231046.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/20200325231046.png)
+
+Most CAN chip manufacturers and vendors, who are in the CAN business, do provide source code (e.g. for LINUX) and libraries (e.g. Windows APIs) for all function calls that represent the connection between the Data Link Layer and the Application Layer.
+
+The nature of the necessary function calls is identical to those needed for the access of any hardware device (drivers):
+
+* Initialization
+* Read Data
+* Write Date
+* Check Status
+
+Naturally, this is just a very basic list of function calls. Most code libraries provide extended functionality like the determination of the bus load, and more.
+
+# Misc
+## DeviceNet
+Is suited for industrial applications (floor automation)
+Was developed by Allen Bradley/Rockwell
+Is maintained by Open DeviceNet Vendor Association (ODVA)
+The DeviceNet Specification, consisting of two volumes: Volume One - Common Industrial Protocol (CIP) and Volume Three- DeviceNet Adaptation of CIP, is available only for ODVA (Open DeviceNet Vendor Association) members.
+
+For further information, refer to http://www.odva.org.
+
+## SAE J1939
+
+Defines communication for vehicle networks (trucks, buses, agricultural equipment, etc.)
+Is a standard developed by the Society of Automotive Engineers (SAE)
+The SAE J1939 Standards Collection can be found exclusively on the Web at http://www.sae.org.
+
 https://wenku.baidu.com/view/1bd617d081eb6294dd88d0d233d4b14e85243e96.html
+
+# Reference
+http://www.copperhilltechnologies.com/category/online-book/can-bus-guide/

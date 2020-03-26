@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */     
 #include "usart.h"
 #include "tim.h"
+#include "can.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -171,9 +172,9 @@ void StartDefaultTask(void *argument)
   
   for (;;)
   {
-    uart_printf("FreeRTOS:loop counter=%d.\n",counter);
+    uart_printf("FreeRTOS:loop counter=%d.\r\n",counter);
     counter++;
-    osDelay(1000);
+    osDelay(10000);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -209,7 +210,8 @@ void StartCanTxTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(1000);
+    CANx_TxTest(&hcan1);
   }
   /* USER CODE END StartCanTxTask */
 }
@@ -227,7 +229,7 @@ void StartCanRxTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(portMAX_DELAY);
   }
   /* USER CODE END StartCanRxTask */
 }

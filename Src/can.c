@@ -22,6 +22,12 @@
 
 /* USER CODE BEGIN 0 */
 CAN_FilterTypeDef sCAN1FilterConfig;
+
+static CAN_TxHeaderTypeDef TxMessage;
+static CAN_TxHeaderTypeDef RxMessage;
+
+uint8_t CAN_Msg_Tx_Buf[8];
+uint8_t CAN_msg_RX_Buf[8];
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan1;
@@ -36,7 +42,7 @@ void MX_CAN1_Init(void)
   hcan1.Init.SyncJumpWidth = CAN_SJW_4TQ;
   hcan1.Init.TimeSeg1 = CAN_BS1_5TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_4TQ;
-  hcan1.Init.TimeTriggeredMode = ENABLE;
+  hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
   hcan1.Init.AutoWakeUp = DISABLE;
   hcan1.Init.AutoRetransmission = DISABLE;
@@ -73,15 +79,6 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* CAN1 interrupt Init */
-    HAL_NVIC_SetPriority(CAN1_TX_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
-    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
-    HAL_NVIC_SetPriority(CAN1_RX1_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(CAN1_RX1_IRQn);
-    HAL_NVIC_SetPriority(CAN1_SCE_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(CAN1_SCE_IRQn);
   /* USER CODE BEGIN CAN1_MspInit 1 */
 
   /* USER CODE END CAN1_MspInit 1 */
@@ -105,11 +102,6 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
 
-    /* CAN1 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
-    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
-    HAL_NVIC_DisableIRQ(CAN1_RX1_IRQn);
-    HAL_NVIC_DisableIRQ(CAN1_SCE_IRQn);
   /* USER CODE BEGIN CAN1_MspDeInit 1 */
 
   /* USER CODE END CAN1_MspDeInit 1 */
@@ -117,9 +109,57 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan){
+	uart_printf("can error callback");
+	uart_printf("%ld\r\n", hcan->ErrorCode);
+}
+
+void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef *hcan){
+	uart_printf("can txcplt callback\r\n");
+}
+
+
 void USR_CAN1_Init(void)
 {
+  sCAN1FilterConfig.FilterBank = 0;
+  sCAN1FilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sCAN1FilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sCAN1FilterConfig.FilterIdHigh = 0x0000;
+  sCAN1FilterConfig.FilterIdLow = 0x0000;
+  sCAN1FilterConfig.FilterMaskIdHigh = 0x0000;
+  sCAN1FilterConfig.FilterMaskIdLow = 0x0000;
+  sCAN1FilterConfig.FilterFIFOAssignment = 0;
+  sCAN1FilterConfig.FilterActivation = ENABLE;
+
+  if(HAL_CAN_ConfigFilter(&hcan1, &sCAN1FilterConfig) != HAL_OK)
+  {
+    uart_printf("Config CAN filter failed.\r\n");
+    Error_Handler();
+  }
+
+  if(HAL_CAN_Start(&hcan1) != HAL_OK)
+  {
+    uart_printf("Start CAN1 failed.\r\n");
+    Error_Handler();
+  }
   
+}
+
+
+uint8_t CANx_TxTest(CAN_HandleTypeDef *hcan)
+{
+  TxMessage.StdId = 0x321;
+  TxMessage.ExtId = 0x00;
+  TxMessage.RTR = CAN_RTR_DATA;
+  TxMessage.IDE = CAN_ID_EXT;
+  TxMessage.DLC = 2;
+
+  CAN_Msg_Tx_Buf[0] = 0xaa;
+  CAN_Msg_Tx_Buf[1] = 0x55;
+
+  HAL_CAN_AddTxMessage(hcan, &TxMessage, CAN_Msg_Tx_Buf, (uint32_t*)CAN_TX_MAILBOX0);
+
+  return 0;
 }
 /* USER CODE END 1 */
 
