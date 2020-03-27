@@ -267,7 +267,9 @@ messages can be stored in each FIFO. The FIFOs are managed completely by hardwar
 打个比方，中控机需要定时获取某个节点的数据（例如转速计的实时转速、油量计的实时油量等），可以向总线发送远程帧；相应节点在接收判断帧ID与自己相符、并且是远程帧的情况下，就可以将自己的实时数据发送到总线上；这样中控机就获取到了相关节点的实时数据。
 远程帧最大的好处就是只需要一帧的时间就能完成一次双向交互。
 
-
+STM32 CAN Module diagram
+![2020-03-27-223322_852x900_scrot](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/2020-03-27-223322_852x900_scrot.png)
+CAN2 start filter bank **numberN** is configured by writing CANSB[5:0] in the CAN_FMR register.
     
 # CANOpen Protocol
 ## CANOpen

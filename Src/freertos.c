@@ -210,7 +210,7 @@ void StartCanTxTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
+    osDelay(100);
     CANx_TxTest(&hcan1);
   }
   /* USER CODE END StartCanTxTask */
