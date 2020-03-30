@@ -234,6 +234,30 @@ So define
 we can get 500Kbps can bus baudrates.
 ![2020-03-24-232818_604x431_scrot.png](https://markdown-picbed.oss-cn-beijing.aliyuncs.com/img/2020-03-24-232818_604x431_scrot.png)
 
+## STM32 Bitrate Config
+Please fill out the following two fields to specify the used CAN clock rate and desired sampling point location and then press submit. The sample point for CANopen bit timings is at **87.5%**. 
+
+Actually the valid range is 75% ~ 90%.
+
+Recommended bit timing settings according to **CiA-301 V4.2**
+- SJW必须小于PBS1和PBS2的最小值
+- SJW最大值不能超过4
+
+
+Bit Rate | Nominal-bit-time |  Pre scaler | Seg1 | Seg2 | SJW | Actual sample point
+-|-|-|-|-|-|- 
+1Mbits/s |1us | 3 | 12 | 2 | 2 | 86.7
+500kbit/s | 2us | 6 | 12 | 2 | 2| 86.7
+250kbit/s | 4us | 12 | 12 | 2 | 2 | 86.7
+125kbit/s | 8us | 45 | 6 | 1 |1 | 87.5
+100kbit/s | 10us | 30 | 12 | 2 | 2 | 86.7
+50kbit/s | 20us | 60 | 12 | 2 | 2 | 86.7
+20kbit/s | 50us |150 | 12 | 2 | 2 | 86.7
+10kbit/s | 100us | 300 | 12 | 2 | 2 | 86.7
+
+https://www.port.de/en/bit-timing.html#
+
+
 CAN总线屏蔽滤波
 STM32的标识符屏蔽滤波目的是减少了CPU处理CAN通信的开销。STM32的过滤器组最多有28个（互联型），每个滤波器组x由2个32为寄存器，CAN_FxR1和CAN_FxR2组成。
 STM32每个过滤器组的位宽都可以独立配置，以满足应用程序的不同需求。根据位宽的不同，每个过滤器组可提供：
